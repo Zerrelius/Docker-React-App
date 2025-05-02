@@ -1,0 +1,14 @@
+node_modules
+dist
+*.md
+*.log
+*.yml
+*.yaml
+*.env
+*.git
+*.gitignore
+*.DS_Store
+*.swp
+*.swo
+*.swm
+*.swn
