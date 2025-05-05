@@ -1,5 +1,18 @@
 Dies ist eine eine kleine React App um Docker auszutesten und damit herum zu spielen.
 
+# Todo App Frontend
+
+## Environment Variables
+
+Die folgenden Environment Variables werden benötigt:
+
+- `VITE_API_URL`: Ist die URL für die backend API (z.B., http://localhost:3000/api)
+
+Um das System entsprechend nutzbar zu machen:
+
+1. Ändere den Namen der `.env.example` zu `.env`
+2. Passe den Inhalt der Variablen entsprechend in der `.env` an
+
 ___
 
 Fragen vom 30.04.2025
@@ -68,3 +81,36 @@ beeinflusst den Git-Verlauf und welche den Docker Build-Kontext?
 Den Docker Build-Kontext beeinflussen die package*.json Dateien.
 
 ___
+
+Fragen vom 05.05.2025
+
+● Was genau wird im Docker-Image für die API gespeichert – Quellcode plus
+alle Abhängigkeiten (dev und prod) oder nur Produktionsabhängigkeiten?
+Begründe kurz.
+Im Image für das Backend (API) werden nur der Quellcode und die Abhängigkeiten für die Produktionsumgebung gespeichert.
+nodemon oder jest werden als Beispiel in meinem Code nicht installiert, da sie für die Produktionsumgebung unwichtig sind. Sie dienen nur zum testen und überwachen der Anwendung im Entwicklungsbereich.
+
+● Welche Rolle spielt Nginx im Frontend-Container in diesem Full-Stack-Setup?
+NGINX ist für die Auslieferung der Webinhalte im Frontend Bereich zuständig.
+
+● Warum wird ein Tool wie nodemon in der Regel nicht im finalen
+Produktiv-Container eingesetzt (Backend)?
+Da Nodemon ein Development Tool ist, kann es durchaus Sicherheitslücken beinhalten und um diese möglichst gering zu halten, wird ein Tool wie Nodemon nur in der Entwicklungsumgebung angewendet. Außerdem würde es das Image vergrößern wenn dieses Package mit installiert werden würde. Es würde mehr RAM verbrauchen und zusätzliche Systemressourcen in anspruch nehmen, die nicht benötigt werden für den Live-Betrieb. Eine Funktion wie ein Auto-Reload den Nodemon bietet, wird ebenfalls nicht benötigt, da Code Änderungen ohnehin nur mit finalen Releases erfolgen sollten und nicht im Live Betrieb, alleine um die Produktionsumgebung so stabil wie möglich zu halten.
+
+● Wie kommuniziert der Frontend-Container (genauer: die im Browser laufende
+Anwendung, die vom Frontend-Container ausgeliefert wird) mit dem
+Backend-Container, wenn beide separat gestartet und Ports gemappt
+werden? Beschreibe den Weg des HTTP-Requests vom Browser zum
+Backend.
+Das Frontend liefert die statischen Inhalte aus wie HTML, CSS und JS Dateien. Diese lösen eine API Anfrage an die VITE_API_URL Variable aus mit dem entsprechenden Port dazu, durch einen Fetch, und dann wird dadurch das Backend mit der Adresse und dem entsprechenden Port aufgerufen. Das Mapping leitet dann die Port Anfrage auf den finalen Server um. Dieser responded und liefert seine Antwort zurück.
+
+● Warum wird die Backend-URL (VITE_API_URL) als Build-Argument während
+des Frontend-Builds injiziert und nicht einfach als Umgebungsvariable für
+den laufenden Frontend-Container gesetzt?
+Da sich diese Variable je nach Container und Umgebung ändern könnte, möchte man jene möglichst flexibel halten. Außerdem möchte man keine .env Dateien in irgendwelchen Hubs hochladen, da man sich sonst potentiell angreifbar macht.
+
+● Beschreibe kurz, welche Best Practice du bei der Installation der
+Node.js-Abhängigkeiten im Backend Dockerfile angewendet hast und warum.
+Ich benutzte den Befehl RUN npm ci --only=production dafür.
+Das npm ci installiert alle Abhängigkeiten die in der package.json aufgeführt sind, allerdings mit ihren letzten stable Releases die sich über die Zeit immer wieder ja ändern können. Daher halte ich die Angriffsfläche auf meine App klein, da ich damit verhindere veraltete Versionen zu verwenden.
+Der Bereich mit dem --only=production dient dazu, dass ich keine DevDependencies mit installiere und dadurch unnötig meine App größer oder angreifbarer mache als nötig.

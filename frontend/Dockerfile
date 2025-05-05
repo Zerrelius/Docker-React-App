@@ -29,5 +29,6 @@ RUN echo "OK" > /usr/share/nginx/html/healthcheck.html
 # Expose port 80 for the web server
 EXPOSE 80
 
-# Define Healthcheck command
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl --fail http://localhost:80 || exit 1
+# Define healthcheck
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost/healthcheck.html || exit 1
