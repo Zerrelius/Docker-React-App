@@ -13,25 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  role      String   @default("user")
-  todos     Todos[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Todos {
   id        Int       @id @default(autoincrement())
   task      String
   completed Boolean   @default(false)
-  userId    Int
-  user      Users     @relation(fields: [userId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deleted   Boolean   @default(false)
   deletedAt DateTime?
-  deletedById Int?
 }

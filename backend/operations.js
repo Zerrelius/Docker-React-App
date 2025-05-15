@@ -16,8 +16,7 @@ const todoOperations = {
   createTodo: async (data) => {
     return await prisma.todos.create({
       data: {
-        task: data.task,
-        userId: data.userId,
+        task: data.task
       }
     });
   },
@@ -35,13 +34,12 @@ const todoOperations = {
   },
 
   // Ein Todo löschen (Soft Delete)
-  deleteTodo: async (id, userId) => {
+  deleteTodo: async (id) => {
     return await prisma.todos.update({
       where: { id },
       data: {
         deleted: true,
-        deletedAt: new Date(),
-        deletedById: userId
+        deletedAt: new Date()
       }
     });
   }

@@ -24,11 +24,12 @@ COPY . .
 RUN mkdir -p /usr/src/app/data && \
     chown -R node:node /usr/src/app
 
+# Create data and logs directories
+RUN mkdir -p /usr/src/app/data /usr/src/app/logs && \
+    chown -R node:node /usr/src/app
+
 # Switch to non-root user
 USER node
-
-# Expose the API port
-EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \

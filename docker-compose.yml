@@ -14,8 +14,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -24,10 +22,11 @@ services:
   backend:
     build: ./backend
     container_name: todo-backend
+    volumes:
+      - ./logs:/usr/src/app/logs
     environment:
+      - LOG_LEVEL=info
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@database:5432/${DB_NAME}
-    ports:
-      - "3000:3000"
     depends_on:
       database:
         condition: service_healthy

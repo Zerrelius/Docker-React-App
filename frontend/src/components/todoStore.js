@@ -23,44 +23,45 @@ const useStore = create((set, get) => ({
       const response = await fetch(`${API_URL}/todos`);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
       
       const todos = await response.json();
       set({ todos });
     } catch (error) {
-      set({ error: 'Fehler beim Laden der Todos: ' + error.message });
+      const errorMessage = error.message === 'Failed to fetch' 
+        ? 'Server nicht erreichbar'
+        : error.message;
+      
+      set({ error: `Fehler beim Laden der Todos: ${errorMessage}` });
       console.error('Failed to fetch todos:', error);
     }
   },
 
   setNewTodo: (text) => set({ newTodo: text }),
 
-  addTodo: async () => {
-    const state = get();
-    if (!state.newTodo.trim()) return;
-
+  addTodo: async (title) => {
     try {
       set({ error: null });
       const response = await fetch(`${API_URL}/todos`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ title: state.newTodo }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title })
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Fehler beim Erstellen des Todos');
       }
 
       const newTodo = await response.json();
-      set(state => ({
+      set(state => ({ 
         todos: [...state.todos, newTodo],
-        newTodo: ""
+        newTodo: '' 
       }));
     } catch (error) {
-      set({ error: 'Fehler beim Erstellen des Todos: ' + error.message });
+      set({ error: error.message });
       console.error('Failed to add todo:', error);
     }
   },
