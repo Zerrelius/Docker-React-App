@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 // API URL aus Umgebungsvariable
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Prüfe ob API_URL gesetzt ist
 if (!API_URL) {

@@ -6,12 +6,29 @@ Dies ist eine eine kleine React App um Docker auszutesten und damit herum zu spi
 
 Die folgenden Environment Variables werden benötigt:
 
+Frontend:
 - `VITE_API_URL`: Ist die URL für die backend API (z.B., http://localhost:3000/api)
+
+Backend:
+- `DATABASE_URL` - Ist die URL für die Database (z.B. postgresql://postgres:password@database:5432/todos)
+
+Database:
+- `DB_USER` - Ist der User für die Datenbank Verbindung (z.B. postgres)
+- `DB_PASSWORD` - Ist das Passwort für den User für die Datenbank Verbindung (z.B. your_secure_password)
+- `DB_NAME=todos` - Ist der Name der Datenbank, dieser wird für die Connection ebenfalls benötigt, kann aber hier angepasst werden
 
 Um das System entsprechend nutzbar zu machen:
 
 1. Ändere den Namen der `.env.example` zu `.env`
 2. Passe den Inhalt der Variablen entsprechend in der `.env` an
+
+## Commands:
+
+Alle Commands müssen in einer Konsole (am besten Shell), innerhalb des Grundordners der Anwendung ausgeführt werden
+
+`docker-compose up --build` - Dient zum starten des Container Clusters + erstellen des Volumes
+
+`docker-compose down -v --rmi all` - Dient zum löschen des Container Clusters + Netzwerk und leeren des Volumes
 
 ___
 

@@ -4,31 +4,35 @@ FROM node:lts-alpine
 # Create app directory
 WORKDIR /usr/src/app
 
+# Install OpenSSL and other dependencies
+RUN apk add --no-cache openssl wget
+
 # Copy package files
 COPY package*.json ./
+COPY prisma ./prisma/
 
-# Install production dependencies only
-RUN npm ci --only=production
+# Install dependencies including development dependencies for Prisma
+RUN npm install
 
-# Install wget for healthcheck
-RUN apk add --no-cache wget
+# Generate Prisma Client
+RUN npx prisma generate
 
 # Copy app source
 COPY . .
 
 # Create data directory and ensure it's writable
 RUN mkdir -p /usr/src/app/data && \
-    chown -R node:node /usr/src/
-    
+    chown -R node:node /usr/src/app
+
 # Switch to non-root user
 USER node
 
 # Expose the API port
 EXPOSE 3000
 
-# Define healthcheck
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \ 
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-# Start the server
-CMD [ "npm", "start" ]
+# Start command
+CMD ["/bin/sh", "-c", "npx prisma db push && node initialDB.js && node app.js"]
